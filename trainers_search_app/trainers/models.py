@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class Trainer(models,model):
+class Trainer(models.Model):
     name=models.CharField(max_length=50)
     place=models.CharField(max_length=50)
     email=models.EmailField()

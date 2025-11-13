@@ -79,8 +79,13 @@ WSGI_APPLICATION = 'trainers_search_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'nie',
+        'USER':'root',
+        'PASSWORD':'Praju_588862',
+        'HOST':'localhost',
+        'PORT':'3306',
+        
     }
 }
 

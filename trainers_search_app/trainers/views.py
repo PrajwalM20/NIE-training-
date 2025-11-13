@@ -16,18 +16,18 @@ class listCreateTrainersView(generics.ListCreateAPIView):
         queryset = Trainer.objects.all()
         
         name=self.request.query_params.get('name')
-        location =self.request.query_params.get('location')
+        location =self.request.query_params.get('place')
         technology=self.request.query_params.get('technology')
          
         if name:
-            queryset = queryset.filter(name_icontains=name)
+            queryset = queryset.filter(name__icontains=name)
              
         if location:
-            queryset = queryset.filter(place_icontains=location) 
+            queryset = queryset.filter(place__icontains=location) 
             
         if technology:
             queryset = queryset.filter(
-                Q(technology1_icontains=technology) |Q(technology2_icontains=technology)                                   
+                Q(technology1__icontains=technology) |Q(technology2__icontains=technology)                                   
             )
         return queryset
         

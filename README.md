@@ -6,7 +6,7 @@ It allows authenticated users to **search, add, update, and delete trainer profi
 
 ---
 
-## 🚀 **Tech Stack**
+##  **Tech Stack**
 
 ### **Backend**
 
@@ -29,7 +29,7 @@ It allows authenticated users to **search, add, update, and delete trainer profi
 
 ---
 
-## ⭐ **Features**
+##  **Features**
 
 ### **Backend Features**
 
@@ -110,9 +110,9 @@ TRAINER-S-SEARCH-APP/
 
 ---
 
-## 🛠️ **Getting Started**
+##  **Getting Started**
 
-### 🔧 **Backend Setup (Django)**
+###  **Backend Setup (Django)**
 
 1. Clone the repository
 
@@ -154,11 +154,11 @@ TRAINER-S-SEARCH-APP/
    ```
 
 Your backend runs on:
-📌 **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**
+ **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**
 
 ---
 
-### 🌐 **Frontend Setup (React)**
+###  **Frontend Setup (React)**
 
 1. Navigate to frontend
 
@@ -179,11 +179,11 @@ Your backend runs on:
    ```
 
 Frontend runs on:
-📌 **[http://localhost:3000/](http://localhost:3000/)**
+ **[http://localhost:3000/](http://localhost:3000/)**
 
 ---
 
-## 🔐 **Authentication Flow**
+##  **Authentication Flow**
 
 1. User logs in & receives JWT access + refresh tokens
 2. Access token is stored (localStorage)
@@ -197,7 +197,7 @@ Frontend runs on:
 
 ---
 
-## ⚙️ **Environment Variables**
+##  **Environment Variables**
 
 ### Django
 
@@ -211,7 +211,7 @@ Frontend runs on:
 
 ---
 
-## 🧪 **Testing Workflow**
+##  **Testing Workflow**
 
 1. Login → verify tokens
 2. Add trainer → appears in list
@@ -222,7 +222,7 @@ Frontend runs on:
 
 ---
 
-## 🔮 **Future Enhancements**
+##  **Future Enhancements**
 
 * Admin vs User role-based access
 * Search by experience & skill level
@@ -233,46 +233,46 @@ Frontend runs on:
 
 ---
 
-## 🖼️ **Screenshots**
+##  **Screenshots**
 
-### 🔐 Login Page
+###  Login Page
 
 ![Login Page](images/Login.png)
 
 ---
 
-### 🏠 Dashboard
+###  Dashboard
 
 ![Home](images/Home.png)
 
 ---
 
-### 🔍 Search Trainers
+###  Search Trainers
 
 ![Search Trainers](images/SearchTrainer.png)
 
 ---
 
-### ➕ Add Trainer
+###  Add Trainer
 
 ![Add Trainer](images/AddTrainer.png)
 
 ---
 
-### 📋 Trainers List
+###  Trainers List
 
 ![Trainers List](images/TrainersList.png)
 
 ---
 
-## 🤝 Contribution
+##  Contribution
 
 This project is open for contributions!
 Fork → Improve → Pull Request.
 
 ---
 
-## 📌 About
+##  About
 
 **Trainer Management System** — a powerful full-stack trainer directory application built using **Django REST Framework** and **React**.
 

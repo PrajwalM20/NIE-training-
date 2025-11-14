@@ -51,7 +51,7 @@ It allows authenticated users to **search, add, update, and delete trainer profi
 
 ---
 
-## 📁 **Project Structure**
+##  **Project Structure**
 
 ```bash
 TRAINER-S-SEARCH-APP/

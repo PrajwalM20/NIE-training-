@@ -1,9 +1,10 @@
-from django.contrib import admin 
-from django.urls import path
-from .views import listCreateTrainersView,RetrieveUpdateDestroyView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import TrainerViewSet
 
-urlpatterns=[
-    path('trainer/',listCreateTrainersView.as_view(),name='list-create-trainer'),
-    path('trainer/<int:pk>',RetrieveUpdateDestroyView.as_view(),name='retrieve-update-delete')
-    
+router = DefaultRouter()
+router.register(r"trainer", TrainerViewSet, basename="trainer")
+
+urlpatterns = [
+    path("", include(router.urls)),
 ]

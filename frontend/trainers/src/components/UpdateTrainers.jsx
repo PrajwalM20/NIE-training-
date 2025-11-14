@@ -2,14 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { updateTrainer, getTrainer } from "../api";
 
-export const UpdateTrainers = () => {
+import {
+  Card,
+  CardContent,
+  TextField,
+  Typography,
+  Button,
+  Box,
+} from "@mui/material";
+
+export default function UpdateTrainers() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const [searchParams] = useSearchParams();
-
   const idFromQuery = searchParams.get("id");
-
-  const [loading, setLoading] = useState(true);
 
   const [trainer, setTrainer] = useState({
     id: "",
@@ -21,40 +27,34 @@ export const UpdateTrainers = () => {
     technology2: "",
   });
 
-  // LOAD TRAINER DATA
+  // load trainer data
   useEffect(() => {
     const load = async () => {
       try {
         if (state?.id) {
           setTrainer(state);
         } else if (idFromQuery) {
-          const data = await getTrainer(idFromQuery);
-          setTrainer(data);
+          const res = await getTrainer(idFromQuery);
+          setTrainer(res.data);
         } else {
           navigate("/trainer-list");
-          return;
         }
       } catch (err) {
         console.error(err);
         navigate("/trainer-list");
-      } finally {
-        setLoading(false);
       }
     };
-
     load();
   }, [state, idFromQuery, navigate]);
 
-  const change = (e) => {
+  const change = (e) =>
     setTrainer({ ...trainer, [e.target.name]: e.target.value });
-  };
 
   const submit = async (e) => {
     e.preventDefault();
-
     try {
       await updateTrainer(trainer.id, trainer);
-      alert("Trainer updated!");
+      alert("Updated successfully");
       navigate("/trainer-list");
     } catch (err) {
       console.error(err);
@@ -62,91 +62,91 @@ export const UpdateTrainers = () => {
     }
   };
 
-  // Show loader instead of black screen
-  if (loading) {
-    return (
-      <div className="text-center mt-5">
-        <h4>Loading trainer data...</h4>
-      </div>
-    );
-  }
-
   return (
-    <div
-      style={{
-        maxWidth: "650px",
-        margin: "40px auto",
-        padding: "30px",
-        background: "white",
-        borderRadius: "20px",
-        boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
+    <Card
+      sx={{
+        maxWidth: 600,
+        mx: "auto",
+        p: 2,
+        boxShadow: 5,
+        borderRadius: 3,
       }}
     >
-      <h2
-        className="text-center mb-4"
-        style={{ fontWeight: "700", color: "#0f1a40" }}
-      >
-        Update Trainer
-      </h2>
-
-      <form onSubmit={submit}>
-        <label className="fw-bold">Name</label>
-        <input
-          className="form-control mb-3"
-          name="name"
-          value={trainer.name}
-          onChange={change}
-          required
-        />
-
-        <label className="fw-bold">Email</label>
-        <input
-          className="form-control mb-3"
-          name="email"
-          value={trainer.email}
-          onChange={change}
-          required
-        />
-
-        <label className="fw-bold">Phone</label>
-        <input
-          className="form-control mb-3"
-          name="phone"
-          value={trainer.phone}
-          onChange={change}
-          required
-        />
-
-        <label className="fw-bold">Place</label>
-        <input
-          className="form-control mb-3"
-          name="place"
-          value={trainer.place}
-          onChange={change}
-          required
-        />
-
-        <label className="fw-bold">Technology 1</label>
-        <input
-          className="form-control mb-3"
-          name="technology1"
-          value={trainer.technology1}
-          onChange={change}
-          required
-        />
-
-        <label className="fw-bold">Technology 2</label>
-        <input
-          className="form-control mb-3"
-          name="technology2"
-          value={trainer.technology2}
-          onChange={change}
-        />
-
-        <button className="btn btn-primary w-100 mt-3" style={{ padding: "12px" }}>
+      <CardContent>
+        <Typography variant="h5" fontWeight={700} mb={2}>
           Update Trainer
-        </button>
-      </form>
-    </div>
+        </Typography>
+
+        <form onSubmit={submit}>
+          <TextField
+            label="Name"
+            name="name"
+            margin="normal"
+            fullWidth
+            required
+            value={trainer.name}
+            onChange={change}
+          />
+
+          <TextField
+            label="Email"
+            name="email"
+            margin="normal"
+            fullWidth
+            required
+            value={trainer.email}
+            onChange={change}
+          />
+
+          <TextField
+            label="Phone"
+            name="phone"
+            margin="normal"
+            fullWidth
+            required
+            value={trainer.phone}
+            onChange={change}
+          />
+
+          <TextField
+            label="Place"
+            name="place"
+            margin="normal"
+            fullWidth
+            required
+            value={trainer.place}
+            onChange={change}
+          />
+
+          <TextField
+            label="Technology 1"
+            name="technology1"
+            margin="normal"
+            fullWidth
+            required
+            value={trainer.technology1}
+            onChange={change}
+          />
+
+          <TextField
+            label="Technology 2"
+            name="technology2"
+            margin="normal"
+            fullWidth
+            value={trainer.technology2}
+            onChange={change}
+          />
+
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{ mt: 3, py: 1.2 }}
+            type="submit"
+          >
+            Update Trainer
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
-};
+}

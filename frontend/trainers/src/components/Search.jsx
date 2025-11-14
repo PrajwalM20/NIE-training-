@@ -1,67 +1,65 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+} from "@mui/material";
 
-export const Search = () => {
+export default function Search() {
   const navigate = useNavigate();
+  const [q, setQ] = useState({ name: "", place: "", technology: "" });
 
-  const [filters, setFilters] = useState({
-    name: "",
-    place: "",
-    technology: "",
-  });
-
-  const handleChange = (e) => {
-    setFilters({
-      ...filters,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSearch = (e) => {
+  const submit = (e) => {
     e.preventDefault();
-    
-    const query = new URLSearchParams(filters).toString();
-    navigate(`/trainer-list?${query}`);
+    const params = new URLSearchParams(q).toString();
+    navigate("/trainer-list?" + params);
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="text-center">Search Trainers</h2>
+    <Card sx={{ maxWidth: 500, mx: "auto", p: 2, boxShadow: 4 }}>
+      <CardContent>
+        <Typography variant="h5" mb={2} fontWeight={600}>
+          Search Trainers
+        </Typography>
 
-      <form
-        onSubmit={handleSearch}
-        className="p-3 rounded shadow"
-        style={{ maxWidth: "450px", margin: "auto" }}
-      >
-        <input
-          type="text"
-          name="name"
-          placeholder="Trainer Name"
-          className="form-control mb-3"
-          value={filters.name}
-          onChange={handleChange}
-        />
+        <form onSubmit={submit}>
+          <TextField
+            label="Trainer Name"
+            fullWidth
+            margin="normal"
+            value={q.name}
+            onChange={(e) => setQ({ ...q, name: e.target.value })}
+          />
 
-        <input
-          type="text"
-          name="place"
-          placeholder="Place"
-          className="form-control mb-3"
-          value={filters.place}
-          onChange={handleChange}
-        />
+          <TextField
+            label="Place"
+            fullWidth
+            margin="normal"
+            value={q.place}
+            onChange={(e) => setQ({ ...q, place: e.target.value })}
+          />
 
-        <input
-          type="text"
-          name="technology"
-          placeholder="Technology"
-          className="form-control mb-3"
-          value={filters.technology}
-          onChange={handleChange}
-        />
+          <TextField
+            label="Technology"
+            fullWidth
+            margin="normal"
+            value={q.technology}
+            onChange={(e) => setQ({ ...q, technology: e.target.value })}
+          />
 
-        <button className="btn btn-dark w-100">Search</button>
-      </form>
-    </div>
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{ mt: 2, py: 1.2 }}
+            type="submit"
+          >
+            Search
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
-};
+}

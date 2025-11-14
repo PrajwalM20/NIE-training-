@@ -1,147 +1,134 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LoginApi } from "../api";
+import api from "../api";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+  Divider,
+} from "@mui/material";
 
-export const Login = () => {
+export default function Login() {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
-
+  const [formData, setFormData] = useState({ username: "", password: "" });
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
 
     try {
-      const data = await LoginApi(formData.username, formData.password);
-
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
-
+      const res = await api.post("token/", formData);
+      localStorage.setItem("access", res.data.access);
+      localStorage.setItem("refresh", res.data.refresh);
       navigate("/home");
-    } catch (error) {
-      console.error("Login failed", error);
-      setErrorMsg("Invalid username or password.");
+    } catch {
+      setErrorMsg("Invalid username or password");
     }
   };
 
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         minHeight: "100vh",
-        background: "#f4f6fb",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        padding: "20px",
+        bgcolor: "#eef2f7",
+        px: 2,
       }}
     >
-      {/* CARD */}
-      <div
-        className="shadow"
-        style={{
-          padding: "40px 35px",
-          width: "100%",
-          maxWidth: "430px",
-          background: "white",
-          borderRadius: "18px",
+      <Card
+        sx={{
+          width: 430,
+          borderRadius: 4,
+          boxShadow: "0 10px 35px rgba(0,0,0,0.15)",
+          overflow: "hidden",
         }}
       >
-        {/* LOGO / BRAND */}
-        <div className="text-center mb-4">
-          <h2
-            style={{
-              fontWeight: "700",
-              color: "#2b2f42",
-              fontSize: "1.9rem",
-            }}
-          >
+        {/* Top Header */}
+        <Box
+          sx={{
+            background: "linear-gradient(135deg, #4f46e5, #3b82f6)",
+            p: 4,
+            textAlign: "center",
+            color: "white",
+          }}
+        >
+          <Typography variant="h4" fontWeight={800}>
             Trainer Portal
-          </h2>
-          <p style={{ color: "#6c6f7a", fontSize: "0.95rem" }}>
-            Sign in to manage trainers, view records, and access the dashboard.
-          </p>
-        </div>
+          </Typography>
+          <Typography sx={{ mt: 1, opacity: 0.9 }}>
+            Sign in to manage trainers & dashboard
+          </Typography>
+        </Box>
 
-        <form onSubmit={handleSubmit}>
-          {/* Username */}
-          <label className="fw-semibold mb-1" style={{ color: "#444" }}>
-            Username
-          </label>
-          <input
-            type="text"
-            name="username"
-            placeholder="Enter your username"
-            className="form-control mb-3"
-            value={formData.username}
-            onChange={handleChange}
-            required
-            style={{ padding: "10px" }}
-          />
-
-          {/* Password */}
-          <label className="fw-semibold mb-1" style={{ color: "#444" }}>
-            Password
-          </label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Enter your password"
-            className="form-control mb-2"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            style={{ padding: "10px" }}
-          />
-
-          {/* Error Message */}
+        <CardContent sx={{ p: 4 }}>
+          {/* Error message */}
           {errorMsg && (
-            <div
-              style={{
-                color: "red",
-                fontSize: "0.9rem",
-                marginBottom: "10px",
-                textAlign: "center",
-              }}
-            >
+            <Alert severity="error" sx={{ mb: 2 }}>
               {errorMsg}
-            </div>
+            </Alert>
           )}
 
-          {/* Login Button */}
-          <button
-            className="btn w-100"
-            type="submit"
-            style={{
-              backgroundColor: "#0d6efd",
-              color: "white",
-              fontWeight: "600",
-              padding: "10px",
-              borderRadius: "8px",
-            }}
-          >
-            Log In
-          </button>
-        </form>
+          {/* Form */}
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="Username"
+              name="username"
+              fullWidth
+              value={formData.username}
+              onChange={handleChange}
+              margin="normal"
+              variant="outlined"
+            />
 
-        {/* Footer */}
-        <p
-          className="text-center mt-4"
-          style={{ fontSize: "0.85rem", color: "#777" }}
-        >
-          © 2025 Trainer Management System • All Rights Reserved
-        </p>
-      </div>
-    </div>
+            <TextField
+              label="Password"
+              name="password"
+              type="password"
+              fullWidth
+              value={formData.password}
+              onChange={handleChange}
+              margin="normal"
+              variant="outlined"
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              sx={{
+                mt: 3,
+                py: 1.4,
+                borderRadius: 3,
+                background: "linear-gradient(135deg, #4f46e5, #3b82f6)",
+                color: "white",
+                fontSize: "16px",
+                fontWeight: 600,
+                textTransform: "none",
+                "&:hover": {
+                  background: "linear-gradient(135deg, #3b35c5, #2563eb)",
+                },
+              }}
+            >
+              Login
+            </Button>
+          </form>
+
+          {/* Bottom text */}
+          <Divider sx={{ my: 3 }} />
+          <Typography align="center" sx={{ fontSize: "13px", color: "#555" }}>
+            © 2025 Trainer Management System
+          </Typography>
+        </CardContent>
+      </Card>
+    </Box>
   );
-};
+}

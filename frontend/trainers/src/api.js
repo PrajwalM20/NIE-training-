@@ -1,104 +1,37 @@
 import axios from "axios";
+const BASE_URL = "http://127.0.0.1:8000/api/";
 
-const BASE_URL = "http://127.0.0.1:8000/api";
+const api = axios.create({ baseURL: BASE_URL });
 
-export const AuthToken = () => {
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem("access");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+}, (err) => Promise.reject(err));
 
-// LOGIN
-export const LoginApi = async (username, password) => {
-  const response = await axios.post(`${BASE_URL}/token/`, {
-    username,
-    password,
-  });
-
-  localStorage.setItem("access", response.data.access);
-  localStorage.setItem("refresh", response.data.refresh);
-
-  return response.data;
-};
-
-// REFRESH TOKEN
-export const refreshAccessToken = async () => {
-  const refresh = localStorage.getItem("refresh");
-
-  if (!refresh) return null;
-
-  try {
-    const response = await axios.post(`${BASE_URL}/token/refresh/`, {
-      refresh,
-    });
-
-    localStorage.setItem("access", response.data.access);
-    return response.data.access;
-  } catch (error) {
-    console.error("Token refresh failed:", error);
-    return null;
-  }
-};
-
-// INTERCEPTOR
-axios.interceptors.response.use(
-  (res) => res,
-  async (error) => {
-    const original = error.config;
-
-    if (error.response?.status === 401 && !original._retry) {
-      original._retry = true;
-
-      const newToken = await refreshAccessToken();
-      if (newToken) {
-        original.headers["Authorization"] = `Bearer ${newToken}`;
-        return axios(original);
-      } else {
-        alert("Session expired. Please login again.");
-        window.location.href = "/";
-      }
+api.interceptors.response.use((res) => res, async (err) => {
+  const original = err.config;
+  if (err.response && err.response.status === 401 && !original._retry) {
+    original._retry = true;
+    try {
+      const refresh = localStorage.getItem("refresh");
+      const r = await axios.post(BASE_URL + "token/refresh/", { refresh });
+      localStorage.setItem("access", r.data.access);
+      return api(original);
+    } catch (e) {
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+      window.location.href = "/login";
     }
-
-    return Promise.reject(error);
   }
-);
+  return Promise.reject(err);
+});
 
-// ADD TRAINER
-export const addtrainer = async (trainer) => {
-  const response = await axios.post(`${BASE_URL}/trainer/`, trainer, {
-    headers: AuthToken(),
-  });
-  return response.data;
-};
+// helper exports
+export const addTrainer = (data) => api.post("trainer/", data);
+export const getTrainers = (params) => api.get("trainer/", { params });
+export const getTrainer = (id) => api.get(`trainer/${id}/`);
+export const updateTrainer = (id, data) => api.put(`trainer/${id}/`, data);
+export const deleteTrainer = (id) => api.delete(`trainer/${id}/`);
 
-// GET SINGLE TRAINER
-export const getTrainer = async (id) => {
-  const response = await axios.get(`${BASE_URL}/trainer/${id}`, {
-    headers: AuthToken(),
-  });
-  return response.data;
-};
-
-// UPDATE TRAINER
-export const updateTrainer = async (id, trainer) => {
-  const response = await axios.put(`${BASE_URL}/trainer/${id}`, trainer, {
-    headers: AuthToken(),
-  });
-  return response.data;
-};
-
-// DELETE TRAINER
-export const deleteTrainer = async (id) => {
-  const response = await axios.delete(`${BASE_URL}/trainer/${id}`, {
-    headers: AuthToken(),
-  });
-  return response.data;
-};
-
-// SEARCH TRAINERS
-export const searchTrainer = async (filters = {}) => {
-  const params = new URLSearchParams(filters).toString();
-  const response = await axios.get(`${BASE_URL}/trainer/?${params}`, {
-    headers: AuthToken(),
-  });
-  return response.data;
-};
+export default api;

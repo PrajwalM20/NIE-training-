@@ -8,7 +8,6 @@ import {
   TextField,
   Typography,
   Button,
-  Box,
 } from "@mui/material";
 
 export default function UpdateTrainers() {
@@ -27,7 +26,7 @@ export default function UpdateTrainers() {
     technology2: "",
   });
 
-  // load trainer data
+  // Load trainer data
   useEffect(() => {
     const load = async () => {
       try {
@@ -52,13 +51,18 @@ export default function UpdateTrainers() {
 
   const submit = async (e) => {
     e.preventDefault();
+
     try {
-      await updateTrainer(trainer.id, trainer);
+      const payload = { ...trainer };
+      delete payload.id; // ❗ DO NOT SEND ID IN BODY
+
+      await updateTrainer(trainer.id, payload);
+
       alert("Updated successfully");
       navigate("/trainer-list");
     } catch (err) {
-      console.error(err);
-      alert("Update failed");
+      console.error(err.response?.data || err);
+      alert("Update failed: invalid data or duplicate email");
     }
   };
 

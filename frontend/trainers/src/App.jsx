@@ -1,6 +1,5 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-
 import Login from "./components/Login";
 import Home from "./components/Home";
 import AddTrainers from "./components/AddTrainers";
@@ -10,28 +9,19 @@ import UpdateTrainers from "./components/UpdateTrainers";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Sidebar from "./components/Sidebar";
 
-export default function App() {
-  const Layout = ({ children }) => (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#f4f6fa" }}>
-      <Sidebar />
-      <main
-        style={{
-          flex: 1,
-          padding: "28px",
-        }}
-      >
-        {children}
-      </main>
-    </div>
-  );
+const Layout = ({ children }) => (
+  <div className="layout-wrapper">
+    <Sidebar />
+    <div className="content-area">{children}</div>
+  </div>
+);
 
+export default function App() {
   return (
     <Routes>
-      {/* Public */}
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
 
-      {/* Protected */}
       <Route
         path="/home"
         element={

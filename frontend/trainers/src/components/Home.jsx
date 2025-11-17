@@ -1,113 +1,214 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
-  Card,
-  CardContent,
-  Typography,
   Button,
-  Grid,
+  Typography,
+  Card,
   Divider,
+  Stack,
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ListIcon from "@mui/icons-material/List";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import AddIcon from "@mui/icons-material/Add";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import PeopleIcon from "@mui/icons-material/People";
+import CodeIcon from "@mui/icons-material/Code";
+import PlaceIcon from "@mui/icons-material/Place";
 
-import { useNavigate } from "react-router-dom";
+import { getTrainerStats } from "../api";
 
 export default function Home() {
   const navigate = useNavigate();
 
-  return (
-    <Box>
+  const [stats, setStats] = useState({
+    total_trainers: 0,
+    total_technologies: 0,
+    total_locations: 0,
+  });
 
-      {/* Header */}
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    try {
+      const res = await getTrainerStats();
+      setStats(res.data);
+    } catch (err) {
+      console.error("Failed to load stats", err);
+    }
+  };
+
+  return (
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
+
+      {/* ⭐ HERO SECTION */}
       <Card
         sx={{
-          background: "linear-gradient(135deg, #4f46e5, #3b82f6)",
+          p: { xs: 4, md: 6 },
+          borderRadius: "25px",
+          background: "linear-gradient(135deg, #0b1b45, #2342a0, #4264ff)",
           color: "white",
-          p: 4,
-          mb: 4,
-          borderRadius: 3,
-          boxShadow: 4,
+          textAlign: "center",
+          minHeight: { xs: 300, md: 420 },
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          boxShadow: "0px 20px 40px rgba(0,0,0,0.18)",
         }}
       >
-        <CardContent>
-          <Typography variant="h4" fontWeight={700}>
-            Trainer Management System
-          </Typography>
-          <Typography sx={{ opacity: 0.9, mt: 1 }}>
-            Add, update, search & manage trainers easily.
-          </Typography>
-        </CardContent>
-      </Card>
+        <Typography
+          variant="h3"
+          sx={{ fontWeight: 900, mb: 1, fontSize: { xs: "26px", md: "42px" } }}
+        >
+          Trainer Management System
+        </Typography>
 
-      <Divider sx={{ mb: 4 }} />
+        <Typography sx={{ fontSize: { xs: "14px", md: "18px" }, mb: 4 }}>
+          Manage trainers: Add, Search, Update, and Delete with ease.
+        </Typography>
 
-      <Typography variant="h5" fontWeight={700} mb={2}>
-        Quick Actions
-      </Typography>
-
-      <Grid container spacing={3} columns={12}>
-        {/* Search */}
-        <Grid size={12} sm={4}>
+        {/* ACTION BUTTONS */}
+        <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
           <Button
-            fullWidth
-            variant="contained"
-            startIcon={<SearchIcon />}
-            endIcon={<ArrowForwardIcon />}
-            sx={{
-              py: 2,
-              borderRadius: 3,
-              background: "#4f46e5",
-              "&:hover": { background: "#3b35c5" },
-            }}
             onClick={() => navigate("/search")}
+            startIcon={<SearchIcon />}
+            sx={{
+              background: "rgba(0,0,0,0.8)",
+              color: "#fff",
+              px: 4,
+              py: 1.2,
+              borderRadius: "40px",
+              fontWeight: 700,
+              "&:hover": { background: "#111", transform: "translateY(-3px)" },
+              transition: "0.2s",
+            }}
           >
             Search Trainers
           </Button>
-        </Grid>
 
-        {/* Add Trainer */}
-        <Grid size={12} sm={4}>
           <Button
-            fullWidth
-            variant="contained"
-            startIcon={<AddCircleIcon />}
-            endIcon={<ArrowForwardIcon />}
-            sx={{
-              py: 2,
-              borderRadius: 3,
-              background: "#10b981",
-              "&:hover": { background: "#0e9d73" },
-            }}
             onClick={() => navigate("/add")}
+            startIcon={<AddIcon />}
+            sx={{
+              background: "linear-gradient(90deg,#007bff,#0b5cff)",
+              color: "#fff",
+              px: 4,
+              py: 1.2,
+              borderRadius: "40px",
+              fontWeight: 700,
+              "&:hover": { transform: "translateY(-3px)" },
+              transition: "0.2s",
+            }}
           >
             Add Trainer
           </Button>
-        </Grid>
 
-        {/* Trainer List */}
-        <Grid size={12} sm={4}>
           <Button
-            fullWidth
-            variant="contained"
-            startIcon={<ListIcon />}
-            endIcon={<ArrowForwardIcon />}
-            sx={{
-              py: 2,
-              borderRadius: 3,
-              background: "#2563eb",
-              "&:hover": { background: "#1e4fd1" },
-            }}
             onClick={() => navigate("/trainer-list")}
+            startIcon={<ListAltIcon />}
+            sx={{
+              background: "linear-gradient(90deg,#0aad4a,#28d463)",
+              color: "#fff",
+              px: 4,
+              py: 1.2,
+              borderRadius: "40px",
+              fontWeight: 700,
+              "&:hover": { transform: "translateY(-3px)" },
+              transition: "0.2s",
+            }}
           >
             Trainer List
           </Button>
-        </Grid>
-      </Grid>
+        </Box>
+      </Card>
 
+      {/* ⭐ LOWER SECTION (NO GRID) */}
+      <Box
+        sx={{
+          mt: 4,
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          gap: 3,
+        }}
+      >
+
+        {/* LEFT SIDE - STATS */}
+        <Card sx={{ p: 3, flex: 2 }} className="glass-card">
+          <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
+            
+            <Box>
+              <Typography sx={{ color: "#334155" }}>Welcome back</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                Quick actions & overview
+              </Typography>
+              <Typography sx={{ color: "#64748b", mt: 0.5 }}>
+                Stats update automatically when trainer data changes.
+              </Typography>
+            </Box>
+
+            <Divider
+              orientation="vertical"
+              flexItem
+              sx={{ display: { xs: "none", md: "block" } }}
+            />
+
+            <Box sx={{ display: "flex", gap: 3 }}>
+              <Box sx={{ textAlign: "center" }}>
+                <PeopleIcon sx={{ color: "#0b5cff", fontSize: 28 }} />
+                <Typography sx={{ fontWeight: 800 }}>{stats.total_trainers}</Typography>
+                <Typography sx={{ fontSize: 13, color: "#64748b" }}>Trainers</Typography>
+              </Box>
+
+              <Box sx={{ textAlign: "center" }}>
+                <CodeIcon sx={{ color: "#0ea5e9", fontSize: 28 }} />
+                <Typography sx={{ fontWeight: 800 }}>{stats.total_technologies}</Typography>
+                <Typography sx={{ fontSize: 13, color: "#64748b" }}>Technologies</Typography>
+              </Box>
+
+              <Box sx={{ textAlign: "center" }}>
+                <PlaceIcon sx={{ color: "#10b981", fontSize: 28 }} />
+                <Typography sx={{ fontWeight: 800 }}>{stats.total_locations}</Typography>
+                <Typography sx={{ fontSize: 13, color: "#64748b" }}>Locations</Typography>
+              </Box>
+            </Box>
+          </Stack>
+        </Card>
+
+        {/* RIGHT SIDE - ABOUT SECTION */}
+        <Card sx={{ p: 3, flex: 1 }} className="glass-card">
+          <Typography sx={{ fontSize: 18, fontWeight: 800, mb: 1 }}>
+            About Trainer Management System
+          </Typography>
+
+          <Typography sx={{ color: "#475569", fontSize: 14 }}>
+            This system helps manage all trainer details, including:
+          </Typography>
+
+          <ul style={{ marginTop: 10, color: "#475569", fontSize: 14 }}>
+            <li>Personal Information</li>
+            <li>Primary & Secondary Technologies</li>
+            <li>Location & Contact Details</li>
+            <li>Search, Update & Delete Options</li>
+          </ul>
+
+          <Button
+            onClick={() => navigate("/trainer-list")}
+            sx={{
+              mt: 2,
+              width: "100%",
+              background: "linear-gradient(90deg,#0b5cff,#6a8cff)",
+              color: "#fff",
+              py: 1,
+              borderRadius: "10px",
+              fontWeight: 700,
+            }}
+          >
+            View Trainers
+          </Button>
+        </Card>
+      </Box>
     </Box>
   );
 }

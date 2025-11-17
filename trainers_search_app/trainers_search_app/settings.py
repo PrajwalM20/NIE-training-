@@ -1,114 +1,70 @@
-"""
-Django settings for trainers_search_app project.
-"""
-
 from pathlib import Path
 from datetime import timedelta
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-q-w=h%=su6oe1+#)g*_t(+kx8ujpj0da3o)c8$ef*y#*jhm*82'
+SECRET_KEY = "dev-secret-key"
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
-    # Django built-ins
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    # Your app
-    'trainers',
-
-    # Third-party
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'corsheaders',
-    'django_filters',
+    "django.contrib.admin","django.contrib.auth","django.contrib.contenttypes",
+    "django.contrib.sessions","django.contrib.messages","django.contrib.staticfiles",
+    "trainers","rest_framework","rest_framework_simplejwt","corsheaders","django_filters",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',          # must be high
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'trainers_search_app.urls'
+ROOT_URLCONF = "trainers_search_app.urls"
 
 TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
+    {"BACKEND":"django.template.backends.django.DjangoTemplates","DIRS":[],"APP_DIRS":True,"OPTIONS":{
+        "context_processors":["django.template.context_processors.debug","django.template.context_processors.request","django.contrib.auth.context_processors.auth","django.contrib.messages.context_processors.messages"],
+    },},
 ]
 
-WSGI_APPLICATION = 'trainers_search_app.wsgi.application'
+WSGI_APPLICATION = "trainers_search_app.wsgi.application"
 
-# Database (leave as your MySQL config)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nie',
-        'USER': 'root',
-        'PASSWORD': 'Praju_588862',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "nie",
+        "USER": "root",
+        "PASSWORD": "Praju_588862",
+        "HOST": "localhost",
+        "PORT": "3306",
+        "OPTIONS": {"init_command": "SET sql_mode='STRICT_TRANS_TABLES'"},
     }
 }
 
 AUTH_PASSWORD_VALIDATORS = []
-
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
+STATIC_URL = "static/"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-STATIC_URL = 'static/'
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CORS_ALLOW_ALL_ORIGINS = True
 
-# DRF + JWT + Filters
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    ),
-    "DEFAULT_FILTER_BACKENDS": (
-        "django_filters.rest_framework.DjangoFilterBackend",
-        "rest_framework.filters.SearchFilter",
-        "rest_framework.filters.OrderingFilter",
-    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend","rest_framework.filters.SearchFilter","rest_framework.filters.OrderingFilter"),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
-
-# CORS for your frontend during development
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
-

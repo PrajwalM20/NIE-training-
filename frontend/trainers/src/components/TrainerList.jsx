@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getTrainers, deleteTrainer } from "../api";
 import { useNavigate, useLocation } from "react-router-dom";
+
 import {
   Table,
   TableBody,
@@ -8,13 +9,13 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
+  IconButton,
   Typography,
   Box,
-  IconButton,
   Divider,
   Card,
   CardContent,
+  Button,
 } from "@mui/material";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -28,81 +29,128 @@ export default function TrainerList() {
   const location = useLocation();
 
   const load = async () => {
-    // Read the search filters from URL
-    const query = new URLSearchParams(location.search);
-    const name = query.get("name");
-    const place = query.get("place");
-    const technology = query.get("technology");
+    try {
+      const query = new URLSearchParams(location.search);
+      const params = {};
 
-    // Build params object
-    const params = {};
-    if (name) params.name = name;
-    if (place) params.place = place;
-    if (technology) params.technology = technology;
+      if (query.get("name")) params.name = query.get("name");
+      if (query.get("place")) params.place = query.get("place");
+      if (query.get("technology1"))
+        params.technology1 = query.get("technology1");
 
-    // Call API with filters
-    const res = await getTrainers(params);
+      const res = await getTrainers(params);
 
-    setTrainers(res.data.results || res.data || []);
+      // Handles paginated or non-paginated data
+      const trainersData = res.data.results || res.data || [];
+      setTrainers(trainersData);
+    } catch (err) {
+      console.error("Failed to load trainers:", err);
+      setTrainers([]);
+    }
   };
 
   useEffect(() => {
     load();
-  }, [location.search]); // REFRESH WHEN SEARCH CHANGES
+  }, [location.search]);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this trainer?"))
+      return;
+
+    try {
+      await deleteTrainer(id);
+      load();
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Failed to delete trainer.");
+    }
+  };
 
   return (
     <Box>
-      <Typography variant="h4" mb={3} fontWeight={700}>
+      <Typography variant="h4" sx={{ fontWeight: 900, mb: 3 }}>
         Trainer List
       </Typography>
 
-      <Paper elevation={4} sx={{ borderRadius: 3, overflow: "hidden" }}>
+      <Paper
+        sx={{
+          borderRadius: 3,
+          overflow: "hidden",
+          mb: 4,
+          backdropFilter: "blur(8px)",
+        }}
+        elevation={4}
+      >
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: "#f3f4f6" }}>
-              {["Name", "Email", "Phone", "Place", "Tech 1", "Tech 2", "Actions"].map(
-                (h) => (
-                  <TableCell key={h} sx={{ fontWeight: 700, py: 2 }}>
-                    {h}
-                  </TableCell>
-                )
-              )}
+            <TableRow
+              sx={{
+                background: "linear-gradient(90deg, #0b5cff, #6a8cff)",
+              }}
+            >
+              {[
+                "Name",
+                "Email",
+                "Phone",
+                "Place",
+                "Tech 1",
+                "Tech 2",
+                "Actions",
+              ].map((header) => (
+                <TableCell
+                  key={header}
+                  sx={{ fontWeight: 800, color: "#fff", fontSize: "15px" }}
+                >
+                  {header}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {trainers.map((t) => (
-              <TableRow key={t.id} hover>
-                <TableCell>{t.name}</TableCell>
-                <TableCell>{t.email}</TableCell>
-                <TableCell>{t.phone}</TableCell>
-                <TableCell>{t.place}</TableCell>
-                <TableCell>{t.technology1}</TableCell>
-                <TableCell>{t.technology2}</TableCell>
+            {trainers.length > 0 ? (
+              trainers.map((t) => (
+                <TableRow
+                  key={t.id}
+                  hover
+                  sx={{
+                    transition: "0.2s",
+                    "&:hover": { background: "rgba(0,0,0,0.03)" },
+                  }}
+                >
+                  <TableCell>{t.name}</TableCell>
+                  <TableCell>{t.email}</TableCell>
+                  <TableCell>{t.phone}</TableCell>
+                  <TableCell>{t.place}</TableCell>
+                  <TableCell>{t.technology1}</TableCell>
+                  <TableCell>{t.technology2}</TableCell>
 
-                <TableCell>
-                  <IconButton onClick={() => setSelected(t)} color="primary">
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => navigate("/update", { state: t })}
-                    color="success"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => deleteTrainer(t.id).then(load)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+                  <TableCell>
+                    <IconButton
+                      color="info"
+                      onClick={() => setSelected(t)}
+                      sx={{ mr: 1 }}
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
 
-            {!trainers.length && (
+                    <IconButton
+                      color="primary"
+                      onClick={() => navigate("/update", { state: t })}
+                      sx={{ mr: 1 }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+
+                    <IconButton color="error" onClick={() => handleDelete(t.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
+                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                   No trainers found
                 </TableCell>
               </TableRow>
@@ -112,16 +160,53 @@ export default function TrainerList() {
       </Paper>
 
       {selected && (
-        <Card sx={{ mt: 3, p: 3 }} elevation={3}>
-          <Typography variant="h6" fontWeight={700}>
-            {selected.name}
-          </Typography>
-          <Divider sx={{ my: 1 }} />
-          <Typography>Email: {selected.email}</Typography>
-          <Typography>Phone: {selected.phone}</Typography>
-          <Typography>Place: {selected.place}</Typography>
-          <Typography>Technology 1: {selected.technology1}</Typography>
-          <Typography>Technology 2: {selected.technology2}</Typography>
+        <Card
+          className="glass-card"
+          sx={{
+            p: 3,
+            maxWidth: 500,
+            mx: "auto",
+            animation: "fadeIn 0.3s ease",
+          }}
+        >
+          <CardContent>
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>
+              {selected.name}
+            </Typography>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography sx={{ mb: 1 }}>
+              <b>Email:</b> {selected.email}
+            </Typography>
+            <Typography sx={{ mb: 1 }}>
+              <b>Phone:</b> {selected.phone}
+            </Typography>
+            <Typography sx={{ mb: 1 }}>
+              <b>Place:</b> {selected.place}
+            </Typography>
+            <Typography sx={{ mb: 1 }}>
+              <b>Technology 1:</b> {selected.technology1}
+            </Typography>
+            <Typography sx={{ mb: 1 }}>
+              <b>Technology 2:</b> {selected.technology2}
+            </Typography>
+
+            <Button
+              sx={{
+                mt: 2,
+                px: 3,
+                background: "linear-gradient(90deg,#0b5cff,#6a8cff)",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 2,
+                "&:hover": { opacity: 0.9 },
+              }}
+              onClick={() => setSelected(null)}
+            >
+              Close
+            </Button>
+          </CardContent>
         </Card>
       )}
     </Box>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { updateTrainer, getTrainer } from "../api";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 
 import {
   Card,
@@ -8,13 +8,15 @@ import {
   TextField,
   Typography,
   Button,
+  Alert,
+  Box,
 } from "@mui/material";
 
 export default function UpdateTrainers() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const [searchParams] = useSearchParams();
-  const idFromQuery = searchParams.get("id");
+  const [params] = useSearchParams();
+  const idQuery = params.get("id");
 
   const [trainer, setTrainer] = useState({
     id: "",
@@ -26,131 +28,83 @@ export default function UpdateTrainers() {
     technology2: "",
   });
 
-  // Load trainer data
+  const [error, setError] = useState("");
+
   useEffect(() => {
     const load = async () => {
       try {
-        if (state?.id) {
-          setTrainer(state);
-        } else if (idFromQuery) {
-          const res = await getTrainer(idFromQuery);
+        if (state?.id) setTrainer(state);
+        else if (idQuery) {
+          const res = await getTrainer(idQuery);
           setTrainer(res.data);
-        } else {
-          navigate("/trainer-list");
-        }
-      } catch (err) {
-        console.error(err);
+        } else navigate("/trainer-list");
+      } catch {
         navigate("/trainer-list");
       }
     };
     load();
-  }, [state, idFromQuery, navigate]);
+  }, []);
 
   const change = (e) =>
     setTrainer({ ...trainer, [e.target.name]: e.target.value });
 
   const submit = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
-      const payload = { ...trainer };
-      delete payload.id; // ❗ DO NOT SEND ID IN BODY
-
-      await updateTrainer(trainer.id, payload);
-
-      alert("Updated successfully");
+      const copy = { ...trainer };
+      delete copy.id;
+      await updateTrainer(trainer.id, copy);
+      alert("Updated successfully!");
       navigate("/trainer-list");
     } catch (err) {
-      console.error(err.response?.data || err);
-      alert("Update failed: invalid data or duplicate email");
+      if (err.response?.data?.email)
+        setError("Email already exists.");
+      else setError("Failed to update.");
     }
   };
 
   return (
-    <Card
-      sx={{
-        maxWidth: 600,
-        mx: "auto",
-        p: 2,
-        boxShadow: 5,
-        borderRadius: 3,
-      }}
-    >
-      <CardContent>
-        <Typography variant="h5" fontWeight={700} mb={2}>
-          Update Trainer
-        </Typography>
-
-        <form onSubmit={submit}>
-          <TextField
-            label="Name"
-            name="name"
-            margin="normal"
-            fullWidth
-            required
-            value={trainer.name}
-            onChange={change}
-          />
-
-          <TextField
-            label="Email"
-            name="email"
-            margin="normal"
-            fullWidth
-            required
-            value={trainer.email}
-            onChange={change}
-          />
-
-          <TextField
-            label="Phone"
-            name="phone"
-            margin="normal"
-            fullWidth
-            required
-            value={trainer.phone}
-            onChange={change}
-          />
-
-          <TextField
-            label="Place"
-            name="place"
-            margin="normal"
-            fullWidth
-            required
-            value={trainer.place}
-            onChange={change}
-          />
-
-          <TextField
-            label="Technology 1"
-            name="technology1"
-            margin="normal"
-            fullWidth
-            required
-            value={trainer.technology1}
-            onChange={change}
-          />
-
-          <TextField
-            label="Technology 2"
-            name="technology2"
-            margin="normal"
-            fullWidth
-            value={trainer.technology2}
-            onChange={change}
-          />
-
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{ mt: 3, py: 1.2 }}
-            type="submit"
-          >
+    <Box sx={{ maxWidth: 700, mx: "auto" }}>
+      <Card className="glass-card">
+        <CardContent>
+          <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>
             Update Trainer
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+          </Typography>
+
+          {error && <Alert severity="error">{error}</Alert>}
+
+          <form onSubmit={submit}>
+            {["name", "email", "phone", "place", "technology1", "technology2"].map((f) => (
+              <TextField
+                key={f}
+                label={f.toUpperCase()}
+                name={f}
+                fullWidth
+                required={f !== "technology2"}
+                margin="normal"
+                value={trainer[f]}
+                onChange={change}
+              />
+            ))}
+
+            <Button
+              type="submit"
+              fullWidth
+              sx={{
+                mt: 2,
+                py: 1.3,
+                background: "linear-gradient(90deg,#0b5cff,#6a8cff)",
+                color: "#fff",
+                fontWeight: 700,
+              }}
+            >
+              UPDATE TRAINER
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </Box>
   );
 }

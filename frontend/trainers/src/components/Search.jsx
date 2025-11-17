@@ -1,132 +1,70 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  TextField,
-  Button,
-  Divider,
-  Alert,
-} from "@mui/material";
-import api from "../api";
+import { Card, CardContent, TextField, Typography, Button, Box } from "@mui/material";
 
 export default function Search() {
   const navigate = useNavigate();
-  const [q, setQ] = useState({ name: "", place: "", technology: "" });
-  const [error, setError] = useState("");
+  const [q, setQ] = useState({
+    name: "",
+    place: "",
+    technology1: "",
+    email: "",
+  });
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault();
-    setError("");
 
-    // 1️⃣ Check if ALL fields are empty
-    if (!q.name && !q.place && !q.technology) {
-      setError("Please enter at least one field to search.");
-      return;
+    // build params only with non-empty values
+    const params = {};
+    if (q.name.trim()) params.name = q.name.trim();
+    if (q.place.trim()) params.place = q.place.trim();
+    if (q.technology1.trim()) params.technology = q.technology1.trim(); // backend expects "technology" or "technology1" depending on your API
+    if (q.email.trim()) params.email = q.email.trim();
+
+    if (Object.keys(params).length === 0) {
+      return alert("Enter at least one search field");
     }
 
-    // 2️⃣ Build params for API
-    const params = new URLSearchParams();
-    if (q.name) params.set("name", q.name);
-    if (q.place) params.set("place", q.place);
-    if (q.technology) params.set("technology", q.technology);
-
-    // 3️⃣ Check with backend if any trainer exists
-    try {
-      const res = await api.get(`/trainer/?${params.toString()}`);
-
-      const results = res.data.results || res.data || [];
-
-      if (results.length === 0) {
-        // ❌ No results → do NOT navigate
-        setError("No trainer found. Try different information.");
-        return;
-      }
-
-      // 4️⃣ SUCCESS → navigate to trainer list
-      navigate(`/trainer-list?${params.toString()}`);
-
-    } catch (err) {
-      setError("Error searching trainers.");
-    }
+    navigate("/trainer-list?" + new URLSearchParams(params).toString());
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: "auto", mt: 5 }}>
-      <Card
-        sx={{
-          borderRadius: 4,
-          boxShadow: "0 12px 40px rgba(0,0,0,0.12)",
-          overflow: "hidden",
-        }}
-      >
-        {/* HEADER */}
-        <Box
-          sx={{
-            p: 4,
-            background: "linear-gradient(135deg, #4f46e5, #3b82f6)",
-            color: "white",
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="h4" fontWeight={800}>
-            Search Trainers
-          </Typography>
-          <Typography sx={{ mt: 1, opacity: 0.9 }}>
-            Enter details to find trainers
-          </Typography>
-        </Box>
-
-        <CardContent sx={{ p: 4 }}>
-          {error && (
-            <Alert severity="warning" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
+    <Box sx={{ maxWidth: 700, mx: "auto" }}>
+      <Card className="glass-card">
+        <CardContent>
+          <Typography variant="h5" sx={{ mb: 2 }}>Search Trainers</Typography>
           <form onSubmit={submit}>
             <TextField
-              label="Trainer Name"
               fullWidth
               margin="normal"
+              label="Name"
               value={q.name}
               onChange={(e) => setQ({ ...q, name: e.target.value })}
             />
-
             <TextField
-              label="Place"
               fullWidth
               margin="normal"
+              label="Place"
               value={q.place}
               onChange={(e) => setQ({ ...q, place: e.target.value })}
             />
-
             <TextField
-              label="Technology"
               fullWidth
               margin="normal"
-              value={q.technology}
-              onChange={(e) => setQ({ ...q, technology: e.target.value })}
+              label="Technology"
+              value={q.technology1}
+              onChange={(e) => setQ({ ...q, technology1: e.target.value })}
             />
-
-            <Divider sx={{ my: 3 }} />
-
-            <Button
-              variant="contained"
+            <TextField
               fullWidth
-              type="submit"
-              sx={{
-                py: 1.4,
-                borderRadius: 3,
-                fontSize: "16px",
-                fontWeight: 600,
-                background: "linear-gradient(135deg, #4f46e5, #3b82f6)",
-              }}
-            >
-              Search Trainer
-            </Button>
+              margin="normal"
+              label="Email"
+              type="email"
+              value={q.email}
+              onChange={(e) => setQ({ ...q, email: e.target.value })}
+              helperText="Search trainers by their email address"
+            />
+            <Button type="submit" variant="contained" sx={{ mt: 2 }}>Search</Button>
           </form>
         </CardContent>
       </Card>
